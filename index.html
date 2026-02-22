@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Parser Links</title>
+  <meta charset="UTF-8">
+  <title>Parser Links</title>
 </head>
 
 <body>
 
-<h2>Parser de liens automatique</h2>
-<p>Ouvre la console navigateur pour voir les résultats (F12)</p>
-<input type="text" id="Url input" placeholder="Url">
-<input type="text" id="Class/Id input" placeholder="Class/Id">
-<button onclick="parseLinks()">Launch parsing</button>
-<script>
-const url = document.getElementById("Url input");
-const identifier = document.getElementById("Class/Id input");
+  <h2>Parser de liens automatique</h2>
+  <p>Ouvre la console navigateur pour voir les résultats (F12)</p>
+  <input type="text" id="UrlInput" placeholder="Url">
+  <input type="text" id="Class/IdInput" placeholder="Class/Id">
+  <button onclick="parseLinks()">Launch parsing</button>
+  <script>
 
-  async function parseLinks() {
-    try {
-        console.log("Parsing en cours...");
+    async function parseLinks() {
+
+      try {
+
+        const url = document.getElementById("urlInput").value;
+        const selector = document.getElementById("selectorInput").value;
 
         const response = await fetch(url, {
-            headers: {
-                "User-Agent": "Parser d'analyse de structure du site non-commercial et non indexeur"
-            }
+          headers: {
+            "User-Agent": "Parser analyse structure site apprentissage parsing"
+          }
         });
 
         const html = await response.text();
@@ -31,36 +33,51 @@ const identifier = document.getElementById("Class/Id input");
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
 
-        const links = [];
+        const results = [];
 
-      
+        let elements;
 
-let resultat;
+        // Sélection selon class ou id
+        if (selector.startsWith("#")) {
+          const id = selector.slice(1);
+          elements = doc.querySelectorAll(`#${id} a`);
+        }
 
-if (identifier.includes("#")) {
-    resultat = texte.split("#")[1];
-    document.getElementById("a#resultat").forEach(a => {
-      if (a.href) links.push(a.href);
-    }
-}
+        else if (selector.startsWith(".")) {
+          const cls = selector.slice(1);
+          elements = doc.querySelectorAll(`.${cls} a`);
+        }
 
-if (identifier.includes(".")) {
-    resultat = texte.split(".")[1];
-    doc.querySelectorAll("a.resultat").forEach(a => {
-            if (a.href) links.push(a.href);
+        else {
+          // fallback = tous les a correspondant au selector
+          elements = doc.querySelectorAll(selector);
+        }
+
+        // Association texte + lien
+        elements.forEach(a => {
+
+          if (a.href) {
+            results.push({
+              text: a.textContent.trim(),
+              link: a.href
+            });
+          }
+
         });
-}
 
-        // Stockage local
-        localStorage.setItem("parsedLinks", JSON.stringify(links));
+        localStorage.setItem("parsedLinks", JSON.stringify(results));
 
-        console.log("Links sauvegardés :", links);
+        console.log("Résultats :", results);
 
-    } catch (err) {
+      } catch (err) {
         console.error("Erreur parsing :", err);
-    }
-}
-</script>
+      }
 
+
+
+    }
+
+  </script>
 </body>
+
 </html>
