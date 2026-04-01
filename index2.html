@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Parser HTML manuel</title>
+</head>
+
+<body>
+
+  <h2>Parser de HTML (copier/coller)</h2>
+
+  <p>Colle ici le HTML de la page :</p>
+  <textarea id="htmlInput" rows="15" cols="80" placeholder="Colle le code HTML ici..."></textarea>
+
+  <br><br>
+
+  <input type="text" id="selectorInput" placeholder="Ex: .class, #id, a">
+
+  <button onclick="parseHTML()">Lancer parsing</button>
+
+  <script>
+
+    function parseHTML() {
+
+      try {
+
+        const html = document.getElementById("htmlInput").value;
+        const selector = document.getElementById("selectorInput").value;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        let elements;
+
+        // Gestion selector
+        if (selector.startsWith("#")) {
+          elements = doc.querySelectorAll(`${selector} a`);
+        }
+        else if (selector.startsWith(".")) {
+          elements = doc.querySelectorAll(`${selector} a`);
+        }
+        else {
+          elements = doc.querySelectorAll(selector);
+        }
+
+        const results = [];
+
+        elements.forEach(el => {
+
+          // Si c’est un <a>
+          if (el.tagName.toLowerCase() === "a" && el.href) {
+            results.push({
+              text: el.textContent.trim(),
+              link: el.href
+            });
+          }
+
+          // Sinon on cherche des <a> dedans
+          else {
+            const links = el.querySelectorAll("a");
+            links.forEach(a => {
+              if (a.href) {
+                results.push({
+                  text: a.textContent.trim(),
+                  link: a.href
+                });
+              }
+            });
+          }
+
+        });
+
+        localStorage.setItem("parsedLinks", JSON.stringify(results));
+
+        console.log("Résultats :", results);
+
+        alert("Parsing terminé ! Regarde la console (F12)");
+
+      } catch (err) {
+        console.error("Erreur parsing :", err);
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>
