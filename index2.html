@@ -63,7 +63,7 @@
               if (a.href) {
                 results.push({
                   text: a.textContent.trim(),
-                  link: a.href
+                  link: a.getAttribute("href")
                 });
               }
             });
