@@ -75,7 +75,12 @@
 
         console.log("Résultats :", results);
 
-        alert("Parsing terminé ! Regarde la console (F12)");
+        if ( !results ) {
+            alert("No results");
+        } else {
+            alert("Parsing terminé ! Regarde la console (F12)");
+        }
+        
 
       } catch (err) {
         console.error("Erreur parsing :", err);
